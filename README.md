@@ -5,6 +5,9 @@ My goal is to create a simulation of a virus through a network of people. This w
 
 ## How can graph theory concepts be applied?
 I can find out/predict the path to get someone sick using BFS
+
 I can find the most vulnerable person in the population (using dynamic programming)
+
 I can find out/predict the likelyhood of someone getting infected based on their distance from an infected person BFS
+
 I can find out if one person has another person in their extended network that is infected DFS
