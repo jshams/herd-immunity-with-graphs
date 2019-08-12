@@ -119,6 +119,34 @@ class Simulation(object):
     def _infect_newly_infected(self):
         pass
 
+    def predict_danger(self, person):
+        # if a person is healthy, vaccinated, or dead they are not harmful
+        if not person.infected or person.is_vaccinated or not person.is_alive:
+            return 0
+        danger = 0
+        network_levels = self.population_graph.find_network_levels(person)
+        for level, others in network_levels.items():
+            if level == 0:
+                continue
+            healthy_unvaccinated_friends = 0
+            for person in others:
+                if not person.infected and not person.is_vaccinated and person.is_alive:
+                    healthy_unvaccinated_friends += 1
+            danger += (healthy_unvaccinated_friends /
+                       len(others)) * 0.2 ** (level - 1)
+        return danger
+
+    def find_most_dangerous(self):
+        most_dangerous_person = None
+        max_danger = 0
+        for person in self.population_graph:
+            danger = self.predict_danger(person)
+            if danger > max_danger or most_dangerous_person is None:
+                max_danger = danger
+                most_dangerous_person = person
+        print('max-danger', max_danger)
+        return most_dangerous_person
+
 
 if __name__ == '__main__':
     j = Simulation("Ebola", 100, 0.2,  0.5, 0.3, 10)
@@ -126,3 +154,5 @@ if __name__ == '__main__':
     j._create_population_connections()
     print(j.population_graph.vertex_count)
     print(j.population_graph.edge_count)
+    most_dangerous = j.find_most_dangerous()
+    print(most_dangerous)
