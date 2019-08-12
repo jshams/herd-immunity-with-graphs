@@ -80,10 +80,18 @@ class Simulation(object):
 
     def _simulation_should_continue(self):
         '''Returns a boolean indicating whether or not to continue simulation'''
-        pass
+        if self.population_size == self.total_dead:
+            print('Everybody died')
+            return False
+        elif self.current_infected == 0:
+            print("The disease stopped spreading")
+            return False
+        else:
+            return True
 
     def run(self):
-        pass
+        while self._simulation_should_continue():
+            self.time_step()
 
     def time_step(self):
         '''Every day we have a new timestep.
