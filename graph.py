@@ -108,6 +108,29 @@ class ADTGraph(object):
                     queue.enqueue(neighbor)
         return list(seen)
 
+    def find_network_levels(self, start):
+        '''Using BFS we can find the nth order network of a starting vertex 
+        returns a dictionary with keys being n level network 
+        and values being an array of vertices in that level'''
+        seen = {start}
+        network_levels = {0: {start}}
+        queue = Queue([start])
+        while not queue.is_empty():
+            vertex_key = queue.dequeue()
+            # vertex_key_level =
+            for level, vertex_set in network_levels.items():
+                if vertex_key in vertex_set:
+                    vertex_key_level = level
+            for neighbor in self.get_vertex(vertex_key).neighbors:
+                if neighbor not in seen:
+                    seen.add(neighbor)
+                    queue.enqueue(neighbor)
+                    if vertex_key_level + 1 not in network_levels:
+                        network_levels[vertex_key_level + 1] = {neighbor}
+                    else:
+                        network_levels[vertex_key_level + 1].add(neighbor)
+        return network_levels
+
     def shortest_path(self, start, end: str):
         '''finds the shortest path between two points and returns None if there are none'''
         seen = {start: [start]}
