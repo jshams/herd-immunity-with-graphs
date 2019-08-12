@@ -63,6 +63,24 @@ class ADTGraph(object):
         for edge in edges:
             self.add_edge(*edge)
 
+    def remove_vertex(self, vert_key):
+        vert = self.get_vertex(vert_key)
+        for neighbor_key in vert.neighbors():
+            self.remove_edge(vert_key, neighbor_key)
+        del self.vertices[vert_key]
+        self.vertex_count -= 1
+
+    def remove_edge(self, from_key, to_key):
+        from_vert = self.get_vertex(from_key)
+        to_vert = self.get_vertex(to_key)
+        del from_vert.neighbors[to_key]
+        del to_vert.neighbors[from_key]
+        try:
+            self.edges.remove(from_key, to_key)
+        except ValueError:
+            self.edges.remove((to_key, from_key))
+        self.edge_count -= 1
+
     def get_vertices(self):
         '''returns the list of all vertices in the graph.'''
         return [vertex for vertex in self]
