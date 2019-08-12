@@ -22,17 +22,19 @@ class ADTGraph(object):
     def __iter__(self):
         '''yields each vertex key'''
         '''traverses the graph in BFS order from a start'''
-        start = self.start
-        seen = {start}
-        queue = Queue([start])
-        yield start
-        while not queue.is_empty():
-            vertex_key = queue.dequeue()
-            for neighbor in self.get_vertex(vertex_key).neighbors:
-                if neighbor not in seen:
-                    yield neighbor
-                    seen.add(neighbor)
-                    queue.enqueue(neighbor)
+        # start = self.start
+        # seen = {start}
+        # queue = Queue([start])
+        # yield start
+        # while not queue.is_empty():
+        #     vertex_key = queue.dequeue()
+        #     for neighbor in self.get_vertex(vertex_key).neighbors:
+        #         if neighbor not in seen:
+        #             yield neighbor
+        #             seen.add(neighbor)
+        #             queue.enqueue(neighbor)
+        for vert in self.vertices:
+            yield vert
 
     def __contains__(self, key):
         return key in self.vertices
@@ -163,11 +165,14 @@ class ADTGraph(object):
 
 
 if __name__ == '__main__':
-    g = ADTGraph('acyclic_directed_graph.txt')
-    d = g.shortest_path_directed_acyclic('a', 'f')
-    print(d)
+    g = ADTGraph()
+    g.add_verticies([1, 2, 3, 4, 5])
+    g.digraph = False
+    g.add_egdes([(1, 2), (2, 3), (3, 4), (4, 5)])
+    print([vert for vert in g])
 
     # shotest_path = g.shortest_path('5', '2')
     # print(shotest_path)
-    # dfs = g.recursive_dfs('5', '2')
+    dfs = g.recursive_dfs(5, 2)
+    print(dfs)
     # print(dfs)
