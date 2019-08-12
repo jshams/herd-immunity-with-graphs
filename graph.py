@@ -22,17 +22,6 @@ class ADTGraph(object):
     def __iter__(self):
         '''yields each vertex key'''
         '''traverses the graph in BFS order from a start'''
-        # start = self.start
-        # seen = {start}
-        # queue = Queue([start])
-        # yield start
-        # while not queue.is_empty():
-        #     vertex_key = queue.dequeue()
-        #     for neighbor in self.get_vertex(vertex_key).neighbors:
-        #         if neighbor not in seen:
-        #             yield neighbor
-        #             seen.add(neighbor)
-        #             queue.enqueue(neighbor)
         for vert in self.vertices:
             yield vert
 
@@ -62,8 +51,11 @@ class ADTGraph(object):
             raise KeyError(f'{from_key} vertex not found in graph')
         if to_key not in self.vertices:
             raise KeyError(f'{to_key} vertex not found in graph')
+        if self.get_vertex(from_key).is_pointing_to(to_key):
+            return
         self.get_vertex(from_key).points_to(to_key, int(weight))
         self.edge_count += 1
+        self.edges.append((from_key, to_key))
         if self.digraph is False:
             self.get_vertex(to_key).points_to(from_key, weight)
 
