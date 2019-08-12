@@ -147,12 +147,39 @@ class Simulation(object):
         print('max-danger', max_danger)
         return most_dangerous_person
 
+    def predict_vulnerability(self, person: Person):
+        # if a person is infected, vaccinated, or dead they are not vulnerable
+        if person.infected or person.is_vaccinated or not person.is_alive:
+            return 0
+        vulnerability = 0
+        network_levels = self.population_graph.find_network_levels(person)
+        for level, others in network_levels.items():
+            if level == 0:
+                continue
+            sick_friends = len(
+                [sick_person for sick_person in others if sick_person.infected])
+            vulnerability += (sick_friends / len(others)) * 0.2 ** (level - 1)
+        return vulnerability
+
+    def find_most_vulnerable(self):
+        most_vulnerable_person = None
+        max_vulnerability = 0
+        for person in self.population_graph:
+            vulnerability = self.predict_vulnerability(person)
+            if vulnerability > max_vulnerability or most_vulnerable_person is None:
+                max_vulnerability = vulnerability
+                most_vulnerable_person = person
+        print('max-vulnerability', max_vulnerability)
+        return most_vulnerable_person
+
 
 if __name__ == '__main__':
     j = Simulation("Ebola", 100, 0.2,  0.5, 0.3, 10)
     j._create_population()
     j._create_population_connections()
-    print(j.population_graph.vertex_count)
-    print(j.population_graph.edge_count)
+    print("vertex count:", j.population_graph.vertex_count)
+    print("edge count:", j.population_graph.edge_count)
     most_dangerous = j.find_most_dangerous()
-    print(most_dangerous)
+    print("most dangerous:", most_dangerous)
+    most_vulnerable = j.find_most_vulnerable()
+    print("most vulnerable:", most_vulnerable)
