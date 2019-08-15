@@ -3,10 +3,10 @@ from random import random, randint, choice
 
 
 class Person():
-    def __init__(self, _id, is_vaccinated: bool, infected=False):
+    def __init__(self, _id, is_vaccinated: bool, is_infected=False):
         self.id = _id
         self.is_vaccinated = is_vaccinated
-        self.infected = infected
+        self.is_infected = is_infected
         self.is_alive = True
 
     def __hash__(self):
@@ -23,10 +23,10 @@ class Person():
 
 
 class Virus():
-    def __init__(self, virus_name, mortality_rate, basic_repro_num):
+    def __init__(self, virus_name, mortality_rate, transmission):
         self.virus_name = virus_name
         self.mortality_rate = mortality_rate
-        self.basic_repro_num = basic_repro_num
+        self.transmission = transmission
 
 
 class Simulation(object):
@@ -43,8 +43,8 @@ class Simulation(object):
         self.total_infected = initial_infected
         self.current_infected = initial_infected
         self.total_dead = 0
-        # self._create_population()
-        # self._create_population_connections()
+        self._create_population()
+        self._create_population_connections()
 
     def _create_population(self):
         '''creates a population with population_size(int) people
@@ -121,7 +121,7 @@ class Simulation(object):
 
     def predict_danger(self, person):
         # if a person is healthy, vaccinated, or dead they are not harmful
-        if not person.infected or person.is_vaccinated or not person.is_alive:
+        if not person.is_infected or person.is_vaccinated or not person.is_alive:
             return 0
         danger = 0
         network_levels = self.population_graph.find_network_levels(person)
@@ -130,7 +130,7 @@ class Simulation(object):
                 continue
             healthy_unvaccinated_friends = 0
             for person in others:
-                if not person.infected and not person.is_vaccinated and person.is_alive:
+                if not person.is_infected and not person.is_vaccinated and person.is_alive:
                     healthy_unvaccinated_friends += 1
             danger += (healthy_unvaccinated_friends /
                        len(others)) * 0.2 ** (level - 1)
@@ -149,7 +149,7 @@ class Simulation(object):
 
     def predict_vulnerability(self, person: Person):
         # if a person is infected, vaccinated, or dead they are not vulnerable
-        if person.infected or person.is_vaccinated or not person.is_alive:
+        if person.is_infected or person.is_vaccinated or not person.is_alive:
             return 0
         vulnerability = 0
         network_levels = self.population_graph.find_network_levels(person)
@@ -157,7 +157,7 @@ class Simulation(object):
             if level == 0:
                 continue
             sick_friends = len(
-                [sick_person for sick_person in others if sick_person.infected])
+                [sick_person for sick_person in others if sick_person.is_infected])
             vulnerability += (sick_friends / len(others)) * 0.2 ** (level - 1)
         return vulnerability
 
@@ -174,12 +174,5 @@ class Simulation(object):
 
 
 if __name__ == '__main__':
-    j = Simulation("Ebola", 100, 0.2,  0.5, 0.3, 10)
-    j._create_population()
-    j._create_population_connections()
-    print("vertex count:", j.population_graph.vertex_count)
-    print("edge count:", j.population_graph.edge_count)
-    most_dangerous = j.find_most_dangerous()
-    print("most dangerous:", most_dangerous)
-    most_vulnerable = j.find_most_vulnerable()
-    print("most vulnerable:", most_vulnerable)
+    sim = Simulation("Ebola", 100, 0.2,  0.5, 0.3, 10)
+    dia = sim.population_graph.diameter()
