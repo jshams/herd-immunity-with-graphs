@@ -146,6 +146,17 @@ class ADTGraph(object):
                     queue.enqueue(neighbor)
         return None
 
+    def diameter(self):
+        longest_so_far = 0
+        for vert in self.vertices:
+            for other_vert in self.vertices:
+                if vert != other_vert:
+                    sp = self.shortest_path(vert, other_vert)
+                    if sp is not None:
+                        if len(sp) > longest_so_far:
+                            longest_so_far = len(sp)
+        return longest_so_far
+
     def recursive_dfs(self, start, end, visited=None):
         '''traverses the graph in DFS order from start to end
         returns a boolean expressing whether a path exists or not'''
